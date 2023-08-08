@@ -1,0 +1,26 @@
+{
+    "name": "node-admin/data-transform-for-excel",
+    "description": "description",
+    "minimum-stability": "stable",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Jack",
+            "email": "email@example.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "NodeAdmin\\DataTransformForExcel\\": "src"
+        }
+    },
+    "require": {
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "NodeAdmin\\DataTransformForExcel\\DataTransformForExcelProvider"
+            ]
+        }
+    }
+}
