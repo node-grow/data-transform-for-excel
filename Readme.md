@@ -35,9 +35,11 @@ public function export(){
 增加配置导出模式
 
 ```php
+use NodeAdmin\DataTransformForExcel\NodeContent\Table\Actions\DataExport;
+
 $table->actions(function (Table\ActionsContainer $container){
     $export = new DataExport();
-    $export->setDataUrl(route('admin.test.export'));
+    $export->setConfigUrl(route('admin.test.export.config'));
     $container->addAction($export);
 });
 
