@@ -15515,14 +15515,14 @@ registerRuntimeCompiler(compileToFunction);
 
 
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/typeof.js
-function _typeof(obj) {
+function _typeof(o) {
   "@babel/helpers - typeof";
 
-  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
-    return typeof obj;
-  } : function (obj) {
-    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-  }, _typeof(obj);
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+    return typeof o;
+  } : function (o) {
+    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+  }, _typeof(o);
 }
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toPrimitive.js
 
@@ -15561,26 +15561,26 @@ function _defineProperty(obj, key, value) {
 }
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread2.js
 
-function objectSpread2_ownKeys(object, enumerableOnly) {
-  var keys = Object.keys(object);
+function objectSpread2_ownKeys(e, r) {
+  var t = Object.keys(e);
   if (Object.getOwnPropertySymbols) {
-    var symbols = Object.getOwnPropertySymbols(object);
-    enumerableOnly && (symbols = symbols.filter(function (sym) {
-      return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-    })), keys.push.apply(keys, symbols);
+    var o = Object.getOwnPropertySymbols(e);
+    r && (o = o.filter(function (r) {
+      return Object.getOwnPropertyDescriptor(e, r).enumerable;
+    })), t.push.apply(t, o);
   }
-  return keys;
+  return t;
 }
-function _objectSpread2(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = null != arguments[i] ? arguments[i] : {};
-    i % 2 ? objectSpread2_ownKeys(Object(source), !0).forEach(function (key) {
-      _defineProperty(target, key, source[key]);
-    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : objectSpread2_ownKeys(Object(source)).forEach(function (key) {
-      Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+function _objectSpread2(e) {
+  for (var r = 1; r < arguments.length; r++) {
+    var t = null != arguments[r] ? arguments[r] : {};
+    r % 2 ? objectSpread2_ownKeys(Object(t), !0).forEach(function (r) {
+      _defineProperty(e, r, t[r]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : objectSpread2_ownKeys(Object(t)).forEach(function (r) {
+      Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r));
     });
   }
-  return target;
+  return e;
 }
 ;// CONCATENATED MODULE: ./node_modules/throttle-debounce/esm/index.js
 /* eslint-disable no-undefined,no-param-reassign,no-shadow */
@@ -17152,7 +17152,7 @@ const useStyleInject = () => {
 const useStyleProvider = props => {
   const parentContext = useStyleInject();
   const context = shallowRef(extends_extends({}, defaultStyleContext));
-  watch([props, parentContext], () => {
+  watch([() => reactivity_esm_bundler_unref(props), parentContext], () => {
     const mergedContext = extends_extends({}, parentContext.value);
     const propsValue = reactivity_esm_bundler_unref(props);
     Object.keys(propsValue).forEach(key => {
@@ -17480,6 +17480,7 @@ function useClientCache(prefix, keyPath, cacheFn, onCacheRemove) {
 
 const isClientSide = _util_canUseDom();
 const SKIP_CHECK = '_skip_check_';
+const MULTI_VALUE = '_multi_value_';
 // ============================================================================
 // ==                                 Parser                                 ==
 // ============================================================================
@@ -17489,7 +17490,7 @@ function useStyleRegister_normalizeStyle(styleStr) {
   return serialized.replace(/\{%%%\:[^;];}/g, ';');
 }
 function isCompoundCSSProperty(value) {
-  return typeof value === 'object' && value && SKIP_CHECK in value;
+  return typeof value === 'object' && value && (SKIP_CHECK in value || MULTI_VALUE in value);
 }
 // 注入 hash 值
 function injectSelectorHash(key, hashId, hashPriority) {
@@ -17609,21 +17610,30 @@ const parseStyle = function (interpolation) {
           effectStyle = extends_extends(extends_extends({}, effectStyle), childEffectStyle);
           styleStr += `${mergedKey}${parsedStr}`;
         } else {
+          function appendStyle(cssKey, cssValue) {
+            if (false) {}
+            // 如果是样式则直接插入
+            const styleName = cssKey.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`);
+            // Auto suffix with px
+            let formatValue = cssValue;
+            if (!unitlessKeys[cssKey] && typeof formatValue === 'number' && formatValue !== 0) {
+              formatValue = `${formatValue}px`;
+            }
+            // handle animationName & Keyframe value
+            if (cssKey === 'animationName' && (cssValue === null || cssValue === void 0 ? void 0 : cssValue._keyframe)) {
+              parseKeyframes(cssValue);
+              formatValue = cssValue.getName(hashId);
+            }
+            styleStr += `${styleName}:${formatValue};`;
+          }
           const actualValue = (_a = value === null || value === void 0 ? void 0 : value.value) !== null && _a !== void 0 ? _a : value;
-          if (false) {}
-          // 如果是样式则直接插入
-          const styleName = key.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`);
-          // Auto suffix with px
-          let formatValue = actualValue;
-          if (!unitlessKeys[key] && typeof formatValue === 'number' && formatValue !== 0) {
-            formatValue = `${formatValue}px`;
+          if (typeof value === 'object' && (value === null || value === void 0 ? void 0 : value[MULTI_VALUE]) && Array.isArray(actualValue)) {
+            actualValue.forEach(item => {
+              appendStyle(key, item);
+            });
+          } else {
+            appendStyle(key, actualValue);
           }
-          // handle animationName & Keyframe value
-          if (key === 'animationName' && (value === null || value === void 0 ? void 0 : value._keyframe)) {
-            parseKeyframes(value);
-            formatValue = value.getName(hashId);
-          }
-          styleStr += `${styleName}:${formatValue};`;
         }
       });
     }
@@ -17750,13 +17760,14 @@ function useStyleRegister(info, styleFn) {
 // ==                                  SSR                                   ==
 // ============================================================================
 function extractStyle(cache) {
+  let plain = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   // prefix with `style` is used for `useStyleRegister` to cache style context
   const styleKeys = Array.from(cache.cache.keys()).filter(key => key.startsWith('style%'));
   // const tokenStyles: Record<string, string[]> = {};
   let styleText = '';
   styleKeys.forEach(key => {
     const [styleStr, tokenKey, styleId] = cache.cache.get(key)[1];
-    styleText += `<style ${ATTR_TOKEN}="${tokenKey}" ${ATTR_MARK}="${styleId}">${styleStr}</style>`;
+    styleText += plain ? styleStr : `<style ${ATTR_TOKEN}="${tokenKey}" ${ATTR_MARK}="${styleId}">${styleStr}</style>`;
   });
   return styleText;
 }
@@ -18112,7 +18123,7 @@ function useCacheToken(theme, tokens) {
   return cachedToken;
 }
 ;// CONCATENATED MODULE: ./node_modules/ant-design-vue/es/version/version.js
-/* harmony default export */ var version_version = ('4.0.0');
+/* harmony default export */ var version_version = ('4.0.1');
 ;// CONCATENATED MODULE: ./node_modules/ant-design-vue/es/version/index.js
 /* eslint import/no-unresolved: 0 */
 // @ts-ignore
@@ -24672,7 +24683,23 @@ var FileSaver_min_default = /*#__PURE__*/__webpack_require__.n(FileSaver_min);
         const disabled = ref(false);
         const title = ref(option.title);
         option.file_name = option.file_name || "数据导出.xlsx";
+        const configDataSheet = async (sheet) => {
+            if (!option.config_url) {
+                await fillDataToSheet(sheet, 1);
+                return;
+            }
+            const res = await instance.http.get(option.config_url);
+            if (!res.data.data_url) {
+                throw new Error('Could not found the data_url field of config result');
+            }
+            option.data_url = res.data.data_url;
+            sheet.columns = res.data.columns;
+            await fillDataToSheet(sheet, 1);
+        };
         const fillDataToSheet = async (sheet, page) => {
+            if (!option.data_url) {
+                throw new Error('please set config_url or data_url');
+            }
             let url = option.data_url;
             url += url.indexOf('?') !== -1 ? '&' : '?';
             url += 'page=' + page;
@@ -24699,7 +24726,7 @@ var FileSaver_min_default = /*#__PURE__*/__webpack_require__.n(FileSaver_min);
             // 添加工作表
             const _sheet1 = _workbook.addWorksheet("sheet1");
             disabled.value = true;
-            await fillDataToSheet(_sheet1, 1);
+            await configDataSheet(_sheet1);
             title.value = '生成文件中';
             // 导出表格
             _workbook.xlsx.writeBuffer().then((buffer) => {
@@ -24743,8 +24770,8 @@ const __exports__ = Indexvue_type_script_setup_true_lang_ts;
 
 
 
-/* harmony default export */ var DataExport = ((props)=>{
-    console.log('props===>',props)
+/* harmony default export */ var DataExport = ((props) => {
+    console.log('props===>', props)
     return createApp(Index, props)
 });
 
