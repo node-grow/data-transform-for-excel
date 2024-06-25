@@ -9,17 +9,13 @@ import {Button, Spin} from "ant-design-vue";
 import ExcelJS from "exceljs";
 import FileSaver from "file-saver";
 import {ref} from "vue";
-import {AxiosInstance} from "axios";
 
-const {option, instance} = defineProps<{
+const {option} = defineProps<{
     option: {
         title: string,
         config_url?: string,
         data_url?: string,
         file_name?: string,
-    },
-    instance: {
-        http: AxiosInstance
     },
 }>()
 
@@ -30,7 +26,7 @@ option.file_name = option.file_name || "数据导出.xlsx"
 
 const configDataSheet = async (sheet: any) => {
     if (option.config_url) {
-        const res = await instance.http.get(option.config_url)
+        const res = await window.$app.$http.get(option.config_url)
         if (!res.data.data_url) {
             throw new Error('Could not found the data_url field of config result')
         }
@@ -48,7 +44,7 @@ const fillDataToSheet = async (sheet: any, page: number) => {
     let url = option.data_url
     url += url.indexOf('?') !== -1 ? '&' : '?'
     url += 'page=' + page
-    const res = await instance.http.get(url)
+    const res = await window.$app.$http.get(url)
 
     if (!res.data.data?.length) {
         return

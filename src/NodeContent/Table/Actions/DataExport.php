@@ -2,16 +2,15 @@
 
 namespace NodeAdmin\DataTransformForExcel\NodeContent\Table\Actions;
 
-use NodeAdmin\Lib\NodeContent\Table\Actions\Custom;
+use NodeAdmin\Lib\NodeContent\Table\Actions\BaseAction;
 
-class DataExport extends Custom
+class DataExport extends BaseAction
 {
-    protected $type = 'custom';
+    protected $type = 'data_export';
 
-    public function __construct($badge = 0)
+    public function __construct()
     {
-        parent::__construct($badge);
-        $this->setUrl(asset('node-admin/data-transform-for-excel/components/DataExport.umd.min.js'));
+        parent::__construct();
         $this->setTitle('数据导出');
     }
 
