@@ -21,13 +21,22 @@ export default defineConfig({
         copyPublicDir: false,
         emptyOutDir: true,
         minify: true,
+        sourcemap: true,
         outDir: path.resolve(__dirname, './assets/components/'),
         // outDir: path.resolve(__dirname, '../../../public/node-admin/data-transform-for-excel/components/'),
         lib: {
             entry: path.resolve(__dirname, './resources/components/DataExport/index.ts'),
             name: 'DataExport',
             fileName: 'data-export',
-            formats: ['umd']
-        }
+            formats: ['umd'],
+        },
+        rollupOptions: {
+            external: ['vue'],
+            output: {
+                globals: {
+                    vue: 'Vue',
+                }
+            }
+        },
     },
 });

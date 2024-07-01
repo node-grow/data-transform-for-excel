@@ -1,11 +1,9 @@
 <template>
-    <Spin :spinning="disabled">
-        <Button type="primary" @click="onClick">{{ title }}</Button>
-    </Spin>
+    <Button :loading="disabled" type="primary" @click="onClick">{{ title }}</Button>
 </template>
 
 <script setup lang="ts">
-import {Button, Spin} from "ant-design-vue";
+import {Button} from "ant-design-vue";
 import ExcelJS from "exceljs";
 import FileSaver from "file-saver";
 import {ref} from "vue";
@@ -58,7 +56,7 @@ const fillDataToSheet = async (sheet: any, page: number) => {
     res.data.data.map(item => {
         sheet.addRow(item)
     })
-    title.value = ((page - 1) * res.data.per_page + res.data.data.length) + ' 条数据'
+    title.value = ((page - 1) * res.data.per_page + res.data.data.length)
 
     await fillDataToSheet(sheet, page + 1)
 }

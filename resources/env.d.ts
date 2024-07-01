@@ -6,6 +6,7 @@ declare global {
         $container: {
             register: (name: string, loader: AsyncComponentLoader | Component) => void,
             get: (name: string) => Promise<any>
-        }
+        },
+        Vue: any,
     }
 }
